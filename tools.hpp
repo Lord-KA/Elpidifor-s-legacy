@@ -164,11 +164,11 @@ namespace booba { // boot of outstanding best api
 
         enum
         {
-            RED    = 0xFF0000FF, 
+            RED    = 0xFF0000FF,
             ORANGE = 0xFF6600FF,
             YELLOW = 0xFFFF00FF,
-            GREEN  = 0x00FF00FF, 
-            BLUE   = 0x0000FFFF, 
+            GREEN  = 0x00FF00FF,
+            BLUE   = 0x0000FFFF,
             INDIGO = 0x480082FF,
             VIOLET = 0x8800FFFF,
             BLACK  = 0x000000FF,
@@ -313,32 +313,44 @@ namespace booba { // boot of outstanding best api
         }
 
 
-        Picture(const Picture &other) = delete;
+        Picture(Picture &&other) = delete;
 
-        Picture(Picture &&other)
-            : x(other.x), y(other.y), w(other.w), h(other.h), data(other.data)
+        Picture(const Picture &other)
+            : x(other.x), y(other.y), w(other.w), h(other.h)
         {
-            other.x = other.y = -1;
-            other.w = other.h = -1;
-            other.data = nullptr;
+            size_t size = w * h;
+            data = new Color[size];
+            std::copy(other.data, other.data + size, data);
         }
-
-        void operator=(const Picture &other) = delete;
 
         void operator=(Picture &&other)
         {
             if (data != nullptr and owning)
                 delete[] data;
 
-            data = other.data;
             x = other.x;
             y = other.y;
             w = other.w;
             h = other.h;
 
-            other.x = other.y = -1;
-            other.w = other.h = -1;
+            data = other.data;
+
             other.data = nullptr;
+        }
+
+        void operator=(const Picture &other)
+        {
+            if (data != nullptr and owning)
+                delete[] data;
+
+            x = other.x;
+            y = other.y;
+            w = other.w;
+            h = other.h;
+
+            size_t size = w * h;
+            data = new Color[size];
+            std::copy(other.data, other.data + size, data);
         }
 
         ~Picture()
@@ -553,7 +565,7 @@ namespace booba { // boot of outstanding best api
      * @brief set text to label wtih id labelID
      */
     extern "C" void setTextLabel(uint64_t labelId, const char *text);
-    
+
     /**
      * @brief get text from label with id labelId
      */

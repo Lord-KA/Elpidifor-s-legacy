@@ -69,8 +69,7 @@ TEST(Basic, assign)
 
     checkPicture(pic_2, image_data, image_w);
 
-    pic_1 = std::move(pic_2);
-    EXPECT_EQ(pic_2.getData(), nullptr);
+    pic_1 = pic_2;
 
     EXPECT_NE(pic_1.getData(), nullptr);
     EXPECT_EQ(pic_1.getX(), pic_x);
